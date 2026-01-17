@@ -116,7 +116,7 @@ const LoginPage: React.FC = () => {
       if (formData.role === 'student' && (key === 'institution' || key === 'subjects')) {
         return;
       }
-      const error = validateField(key, formData[key as keyof FormData]);
+      const error = validateField(key, formData[key as keyof FormData] || '');
       if (error) {
         newErrors[key as keyof FormErrors] = error;
       }
