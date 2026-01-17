@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { BookOpen, CheckCircle2, HelpCircle, XCircle, Calendar as CalendarIcon, Clock, GraduationCap, ArrowRight, Brain, Users, Zap, Target, FileText, Code, Search } from 'lucide-react';
+import { BookOpen, CheckCircle2, Calendar as CalendarIcon, Clock, GraduationCap, ArrowRight, Brain, Users, Zap, Target, FileText, Code, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import 'react-calendar/dist/Calendar.css';
+import type { Value } from 'react-calendar/dist/cjs/shared/types';
 
 interface Exam {
   id: string;
@@ -417,7 +418,7 @@ const ExamPracticePage: React.FC = () => {
   const [selectedExam, setSelectedExam] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleStartExam = (examId: string, examTitle: string) => {
+  const handleStartExam = (_examId: string, examTitle: string) => {
     setSelectedExam(examTitle);
     setShowMockTestModal(true);
   };
@@ -460,6 +461,16 @@ const ExamPracticePage: React.FC = () => {
     return hasExam ? (
       <div className="h-1 w-1 bg-indigo-600 rounded-full mx-auto mt-1"></div>
     ) : null;
+  };
+
+  const handleCalendarChange = (value: Value) => {
+    if (value instanceof Date) {
+      setSelectedDate(value);
+    } else if (Array.isArray(value) && value[0] instanceof Date) {
+      setSelectedDate(value[0]);
+    } else {
+      setSelectedDate(null);
+    }
   };
 
   const filteredExams = selectedDate ? getExamsForDate(selectedDate) : [];
@@ -704,7 +715,7 @@ const ExamPracticePage: React.FC = () => {
             
             <div className="mb-6">
               <Calendar
-                onChange={setSelectedDate}
+                onChange={handleCalendarChange}
                 value={selectedDate}
                 className="w-full rounded-lg border-none"
                 tileClassName={tileClassName}
