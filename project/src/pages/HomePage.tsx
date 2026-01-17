@@ -4,7 +4,14 @@ import { motion } from 'framer-motion';
 import Button from '../components/Button';
 import { Link } from '../components/Link';
 
-const FloatingElement = ({ children, delay = 0, duration = 4, scale = 1 }) => (
+interface FloatingElementProps {
+  children: React.ReactNode;
+  delay?: number;
+  duration?: number;
+  scale?: number;
+}
+
+const FloatingElement: React.FC<FloatingElementProps> = ({ children, delay = 0, duration = 4, scale = 1 }) => (
   <motion.div
     initial={{ y: 0, rotate: 0, scale }}
     animate={{ 
