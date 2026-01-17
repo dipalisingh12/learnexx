@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   GraduationCap,
   BarChart2,
-  MessageSquare,
   Settings,
   Menu,
   X,
@@ -17,7 +16,8 @@ import {
   CheckSquare,
   ChevronDown,
   HelpCircle,
-  LogOut
+  LogOut,
+  BookOpen
 } from 'lucide-react';
 import { Link } from './Link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -228,19 +228,18 @@ const StudentLayout: React.FC = () => {
                   <Link
                     href="/student/profile"
                     className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsProfileOpen(false)}
                   >
                     <User className="h-4 w-4 mr-2" />
                     View Profile
                   </Link>
                   <hr className="my-2" />
-                  <button
-                    className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
-                    onClick={handleLogout}
+                  <Link
+                    href="/login"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                     <a href="LoginPage.tsx">Logout</a>
-                  </button>
+                    Logout
+                  </Link>
                 </motion.div>
               )}
             </AnimatePresence>
