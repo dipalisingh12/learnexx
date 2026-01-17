@@ -12,9 +12,7 @@ import {
   BookOpen,
   Eye,
   EyeOff,
-  Pause,
   Play,
-  RotateCcw,
   Send
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -144,20 +142,19 @@ const MockTestPage: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [timeLeft, setTimeLeft] = useState(testConfig.duration * 60); // in seconds
   const [isTestStarted, setIsTestStarted] = useState(false);
-  const [isTestPaused, setIsTestPaused] = useState(false);
   const [isTestSubmitted, setIsTestSubmitted] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [showQuestionPalette, setShowQuestionPalette] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
 
   // Refs
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const autoSaveRef = useRef<number | null>(null);
 
   // Timer effect
   useEffect(() => {
-    if (isTestStarted && !isTestPaused && !isTestSubmitted && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
+    if (isTestStarted && !isTestSubmitted && timeLeft > 0) {
+      timerRef.current = window.setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
             handleAutoSubmit();
@@ -177,13 +174,13 @@ const MockTestPage: React.FC = () => {
         clearInterval(timerRef.current);
       }
     };
-  }, [isTestStarted, isTestPaused, isTestSubmitted, timeLeft]);
+  }, [isTestStarted, isTestSubmitted, timeLeft]);
 
   // Auto-save effect
   useEffect(() => {
     if (isTestStarted && !isTestSubmitted) {
       setAutoSaveStatus('saving');
-      autoSaveRef.current = setTimeout(() => {
+      autoSaveRef.current = window.setTimeout(() => {
         // Mock auto-save
         localStorage.setItem(`mocktest_${examId}`, JSON.stringify({
           questions,
@@ -200,7 +197,7 @@ const MockTestPage: React.FC = () => {
         clearTimeout(autoSaveRef.current);
       }
     };
-  }, [questions, currentQuestion, examId, isTestStarted, isTestSubmitted]);
+  }, [questions, currentQuestion, examId, isTestStarted, isTestSubmitted, timeLeft]);
 
   // Prevent page refresh/close
   useEffect(() => {
@@ -333,7 +330,6 @@ const MockTestPage: React.FC = () => {
 
   const attemptedCount = questions.filter(q => q.userAnswer !== null).length;
   const markedCount = questions.filter(q => q.isMarkedForReview).length;
-  const notVisitedCount = questions.length - attemptedCount;
 
   if (!isTestStarted) {
     return (
