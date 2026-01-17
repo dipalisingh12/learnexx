@@ -52,11 +52,6 @@ const StudentLayout: React.FC = () => {
     { title: 'Achievement Unlocked', message: '7-day study streak! 🔥', time: '2h ago' },
   ];
 
-  const handleLogout = () => {
-    // Handle logout logic here
-    console.log('Logout clicked');
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Sidebar Toggle */}
