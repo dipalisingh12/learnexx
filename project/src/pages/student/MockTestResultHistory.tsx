@@ -1,309 +1,230 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, Brain, Users, Download, TrendingUp, Award } from 'lucide-react';
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Download, RotateCcw, BookOpen, TrendingUp, CheckCircle2, XCircle, AlertCircle, Clock } from 'lucide-react';
 import Button from '../../components/Button';
 
-interface MockTestResult {
-  id: string;
-  examType: string;
-  testMode: 'ai' | 'teacher';
-  date: string;
-  score: string;
-  accuracy: string;
-  timeTaken: string;
-  status: 'Completed';
-  totalQuestions: number;
-  correctAnswers: number;
-  subject: string;
+interface Answer {
+  id: number;
+  question: string;
+  userAnswer: string | null;
+  correctAnswer: string;
+  status: 'Correct' | 'Incorrect' | 'Skipped';
 }
 
-const mockResults: MockTestResult[] = [
-  {
-    id: '1',
-    examType: 'JEE Mains',
-    testMode: 'ai',
-    date: '2024-03-15',
-    score: '195/300',
-    accuracy: '92%',
-    timeTaken: '2h 45m',
-    status: 'Completed',
-    totalQuestions: 75,
-    correctAnswers: 69,
-    subject: 'Physics, Chemistry, Mathematics'
-  },
-  {
-    id: '2',
-    examType: 'NEET UG',
-    testMode: 'teacher',
-    date: '2024-03-10',
-    score: '540/720',
-    accuracy: '85%',
-    timeTaken: '3h 10m',
-    status: 'Completed',
-    totalQuestions: 180,
-    correctAnswers: 153,
-    subject: 'Physics, Chemistry, Biology'
-  },
-  {
-    id: '3',
-    examType: 'SSC CGL',
-    testMode: 'ai',
-    date: '2024-03-05',
-    score: '170/200',
-    accuracy: '88%',
-    timeTaken: '1h 45m',
-    status: 'Completed',
-    totalQuestions: 100,
-    correctAnswers: 88,
-    subject: 'Quantitative, English, Reasoning'
-  },
-  {
-    id: '4',
-    examType: 'GATE',
-    testMode: 'teacher',
-    date: '2024-02-28',
-    score: '78/100',
-    accuracy: '91%',
-    timeTaken: '2h 55m',
-    status: 'Completed',
-    totalQuestions: 65,
-    correctAnswers: 59,
-    subject: 'Computer Science'
-  },
-  {
-    id: '5',
-    examType: 'JEE Advanced',
-    testMode: 'ai',
-    date: '2024-02-20',
-    score: '245/372',
-    accuracy: '79%',
-    timeTaken: '2h 30m',
-    status: 'Completed',
-    totalQuestions: 54,
-    correctAnswers: 43,
-    subject: 'Physics, Chemistry, Mathematics'
-  }
-];
+interface ResultData {
+  examType: string;
+  duration: string;
+  totalQuestions: number;
+  attempted: number;
+  correct: number;
+  wrong: number;
+  score: number;
+  maxScore: number;
+  timeTaken: string;
+  answers: Answer[];
+  subjectScores: {
+    [key: string]: number;
+  };
+}
 
-const MockTestResultsHistoryPage: React.FC = () => {
+const mockResultData: ResultData = {
+  examType: "JEE Mains Mock Test",
+  duration: "3 Hours",
+  totalQuestions: 50,
+  attempted: 47,
+  correct: 39,
+  wrong: 8,
+  score: 195,
+  maxScore: 200,
+  timeTaken: "2h 32m",
+  subjectScores: {
+    Physics: 85,
+    Chemistry: 92,
+    Mathematics: 78
+  },
+  answers: [
+    {
+      id: 1,
+      question: "What is the powerhouse of the cell?",
+      userAnswer: "Mitochondria",
+      correctAnswer: "Mitochondria",
+      status: "Correct"
+    },
+    {
+      id: 2,
+      question: "Which of the following is NOT a type of cell division?",
+      userAnswer: "Binary Fission",
+      correctAnswer: "Photosynthesis",
+      status: "Incorrect"
+    },
+    {
+      id: 3,
+      question: "The cell membrane is primarily composed of:",
+      userAnswer: null,
+      correctAnswer: "Phospholipid bilayer",
+      status: "Skipped"
+    }
+  ]
+};
+
+const MockTestResultPage: React.FC = () => {
+  const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
-  const [filterMode, setFilterMode] = useState<'all' | 'ai' | 'teacher'>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'score' | 'accuracy'>('date');
+  const result = mockResultData; // In real app, fetch based on examId
 
-  const filteredResults = mockResults
-    .filter(result => filterMode === 'all' || result.testMode === filterMode)
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'date':
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case 'score':
-          const scoreA = parseInt(a.score.split('/')[0]);
-          const scoreB = parseInt(b.score.split('/')[0]);
-          return scoreB - scoreA;
-        case 'accuracy':
-          const accA = parseInt(a.accuracy.replace('%', ''));
-          const accB = parseInt(b.accuracy.replace('%', ''));
-          return accB - accA;
-        default:
-          return 0;
-      }
-    });
-
-  const averageAccuracy = Math.round(
-    mockResults.reduce((sum, result) => sum + parseInt(result.accuracy.replace('%', '')), 0) / mockResults.length
-  );
-
-  const totalTestsTaken = mockResults.length;
-  const aiTests = mockResults.filter(r => r.testMode === 'ai').length;
-  const teacherTests = mockResults.filter(r => r.testMode === 'teacher').length;
+  const accuracy = Math.round((result.correct / result.attempted) * 100);
 
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Mock Test Results History</h1>
-        <p className="text-gray-600">View and analyze your practice test performances across different modes</p>
+        <button 
+          onClick={() => navigate('/student/exam-practice')}
+          className="flex items-center text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          Back to Practice Tests
+        </button>
       </div>
 
-      {/* Results Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-center">
-            <div className="p-3 bg-indigo-100 rounded-lg">
-              <CheckCircle2 className="h-6 w-6 text-indigo-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Average Accuracy</p>
-              <p className="text-2xl font-semibold text-gray-900">{averageAccuracy}%</p>
-            </div>
+      {/* Result Summary Header */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{result.examType} Results</h1>
+            <p className="text-gray-600">Completed in {result.timeTaken}</p>
           </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Tests Completed</p>
-              <p className="text-2xl font-semibold text-gray-900">{totalTestsTaken}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-center">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Brain className="h-6 w-6 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">AI Tests</p>
-              <p className="text-2xl font-semibold text-gray-900">{aiTests}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Users className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm text-gray-500">Teacher Tests</p>
-              <p className="text-2xl font-semibold text-gray-900">{teacherTests}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters and Controls */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Filter by Mode:</span>
-              <select
-                value={filterMode}
-                onChange={(e) => setFilterMode(e.target.value as 'all' | 'ai' | 'teacher')}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="all">All Tests</option>
-                <option value="ai">AI Generated</option>
-                <option value="teacher">Teacher Designed</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'date' | 'score' | 'accuracy')}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="date">Date</option>
-                <option value="score">Score</option>
-                <option value="accuracy">Accuracy</option>
-              </select>
-            </div>
-          </div>
-          
-          <Button variant="outline" className="flex items-center">
+          <Button variant="outline" className="mt-4 md:mt-0">
             <Download className="h-4 w-4 mr-2" />
-            Export Results
+            Download Report
           </Button>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-green-50 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-green-600">Score</p>
+                <p className="text-2xl font-bold text-green-900">{result.score}/{result.maxScore}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-600">Accuracy</p>
+                <p className="text-2xl font-bold text-blue-900">{accuracy}%</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-purple-600">Questions</p>
+                <p className="text-2xl font-bold text-purple-900">
+                  {result.attempted}/{result.totalQuestions}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-orange-50 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-orange-600">Time Taken</p>
+                <p className="text-2xl font-bold text-orange-900">{result.timeTaken}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
+                <Clock className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Results Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Test Results ({filteredResults.length})</h2>
+      {/* Subject-wise Performance */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Subject-wise Performance</h2>
+        <div className="space-y-4">
+          {Object.entries(result.subjectScores).map(([subject, score]) => (
+            <div key={subject}>
+              <div className="flex justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">{subject}</span>
+                <span className="text-sm font-medium text-gray-700">{score}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-indigo-600 h-2 rounded-full" 
+                  style={{ width: `${score}%` }}
+                ></div>
+              </div>
+            </div>
+          ))}
         </div>
-        
+      </div>
+
+      {/* Question-wise Analysis */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Question-wise Analysis</h2>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Exam Type
+                  Q.No
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Test Mode
+                  Question
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
+                  Your Answer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Score
+                  Correct Answer
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Accuracy
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Time Taken
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Questions
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  Status
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredResults.map((result) => (
-                <tr key={result.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{result.examType}</div>
-                      <div className="text-sm text-gray-500">{result.subject}</div>
-                    </div>
+              {result.answers.map((answer) => (
+                <tr key={answer.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {answer.id}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {answer.question}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {answer.userAnswer || '—'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {answer.correctAnswer}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      result.testMode === 'ai' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-green-100 text-green-800'
+                      answer.status === 'Correct'
+                        ? 'bg-green-100 text-green-800'
+                        : answer.status === 'Incorrect'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {result.testMode === 'ai' ? (
-                        <>
-                          <Brain className="h-3 w-3 mr-1" />
-                          AI Generated
-                        </>
-                      ) : (
-                        <>
-                          <Users className="h-3 w-3 mr-1" />
-                          Teacher Designed
-                        </>
-                      )}
+                      {answer.status === 'Correct' && <CheckCircle2 className="h-4 w-4 mr-1" />}
+                      {answer.status === 'Incorrect' && <XCircle className="h-4 w-4 mr-1" />}
+                      {answer.status === 'Skipped' && <AlertCircle className="h-4 w-4 mr-1" />}
+                      {answer.status}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{result.date}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{result.score}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{result.accuracy}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{result.timeTaken}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {result.correctAnswers}/{result.totalQuestions}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/student/mocktest/result/${result.id}`)}
-                      className="inline-flex items-center"
-                    >
-                      View Details
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
                   </td>
                 </tr>
               ))}
@@ -312,32 +233,26 @@ const MockTestResultsHistoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Performance Insights */}
-      <div className="mt-8 bg-gradient-to-r from-indigo-900 to-purple-900 rounded-xl p-8 text-white">
-        <div className="flex items-center mb-4">
-          <Award className="h-8 w-8 mr-3" />
-          <h3 className="text-xl font-semibold">Performance Insights</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <p className="text-indigo-200 text-sm">Best Performance</p>
-            <p className="text-2xl font-bold">92% Accuracy</p>
-            <p className="text-indigo-200 text-sm">JEE Mains (AI Generated)</p>
-          </div>
-          <div>
-            <p className="text-indigo-200 text-sm">Improvement Trend</p>
-            <p className="text-2xl font-bold">+15%</p>
-            <p className="text-indigo-200 text-sm">Over last 5 tests</p>
-          </div>
-          <div>
-            <p className="text-indigo-200 text-sm">Preferred Mode</p>
-            <p className="text-2xl font-bold">{aiTests > teacherTests ? 'AI Tests' : 'Teacher Tests'}</p>
-            <p className="text-indigo-200 text-sm">{Math.max(aiTests, teacherTests)} out of {totalTestsTaken} tests</p>
-          </div>
-        </div>
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Button 
+          onClick={() => navigate(`/student/mocktest/${examId}`)}
+          className="flex-1"
+        >
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Retake Test
+        </Button>
+        <Button 
+          variant="outline"
+          onClick={() => navigate('/student/progress')}
+          className="flex-1"
+        >
+          <TrendingUp className="h-4 w-4 mr-2" />
+          View Progress Dashboard
+        </Button>
       </div>
     </div>
   );
 };
 
-export default MockTestResultsHistoryPage;
+export default MockTestResultPage;
