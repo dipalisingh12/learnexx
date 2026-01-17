@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, CheckCircle2, ArrowRight, Brain, Users, Filter, Download, TrendingUp, Award } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Brain, Users, Download, TrendingUp, Award } from 'lucide-react';
 import Button from '../../components/Button';
 
 interface MockTestResult {
@@ -180,7 +180,6 @@ const MockTestResultsHistoryPage: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-wrap gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">Filter by Mode:</span>
               <select
                 value={filterMode}
