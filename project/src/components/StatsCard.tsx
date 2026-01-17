@@ -1,14 +1,9 @@
-import React from 'react';
 import type { LucideIcon } from "lucide-react";
-
-type Props = {
-  icon: LucideIcon;
-};
 
 interface StatsCardProps {
   title: string;
   value: string;
-  subtitle: string;
+  subtitle?: string;
   icon: LucideIcon;
   color: string;
   trend?: string;
@@ -18,7 +13,6 @@ interface StatsCardProps {
 const StatsCard: React.FC<StatsCardProps> = ({
   title,
   value,
-  subtitle,
   icon: Icon,
   color,
   trend,
