@@ -1,9 +1,4 @@
-import React from 'react';
 import type { LucideIcon } from "lucide-react";
-
-type Props = {
-  icon: LucideIcon;
-};
 
 interface FeatureCardProps {
   title: string;
