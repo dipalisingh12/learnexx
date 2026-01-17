@@ -5,7 +5,10 @@ import Calendar from 'react-calendar';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import 'react-calendar/dist/Calendar.css';
-import type { Value } from 'react-calendar/dist/cjs/shared/types';
+
+// Define Value type locally instead of importing
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 interface Exam {
   id: string;
@@ -705,72 +708,4 @@ const ExamPracticePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Sidebar Calendar */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm sticky top-6">
-            <div className="flex items-center mb-4">
-              <CalendarIcon className="h-5 w-5 text-gray-500 mr-2" />
-              <h3 className="font-semibold text-gray-900">Practice Calendar</h3>
-            </div>
-            
-            <div className="mb-6">
-              <Calendar
-                onChange={handleCalendarChange}
-                value={selectedDate}
-                className="w-full rounded-lg border-none"
-                tileClassName={tileClassName}
-                tileContent={tileContent}
-              />
-            </div>
-
-            {selectedDate && (
-              <div className="space-y-4">
-                <h4 className="font-medium text-gray-900">
-                  Practice Tests on {selectedDate.toLocaleDateString()}
-                </h4>
-                {filteredExams.length > 0 ? (
-                  filteredExams.map((exam) => (
-                    <div key={exam.id} className="bg-gray-50 rounded-lg p-4">
-                      <h5 className="font-medium text-gray-900">{exam.title}</h5>
-                      <p className="text-sm text-gray-600">{exam.time}</p>
-                      <div className="mt-2 space-y-1">
-                        <div className="flex items-center text-gray-600">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span className="text-sm">{exam.duration}</span>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <BookOpen className="h-4 w-4 mr-2" />
-                          <span className="text-sm">{exam.subjects.join(', ')}</span>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={() => handleStartExam(exam.id, exam.title)}
-                        className="mt-3 w-full"
-                      >
-                        Start Practice
-                      </Button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-600 text-center py-4">
-                    No practice tests scheduled for this date
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Mock Test Selection Modal */}
-      <MockTestSelectionModal
-        isOpen={showMockTestModal}
-        onClose={() => setShowMockTestModal(false)}
-        examTitle={selectedExam}
-        onSelectMode={handleMockTestModeSelect}
-      />
-    </div>
-  );
-};
-
-export default ExamPracticePage;
+        {/* Sidebar Calendar */
