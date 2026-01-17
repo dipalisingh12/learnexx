@@ -6,7 +6,7 @@ import Button from '../../components/Button';
 import Input from '../../components/Input';
 import 'react-calendar/dist/Calendar.css';
 
-// Define Value type locally instead of importing
+// Define Value type locally
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
@@ -285,7 +285,6 @@ const MockTestSelectionModal: React.FC<{
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* AI Generated Option */}
               <div 
                 className="border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-all duration-200"
                 onClick={() => handleModeSelect('ai')}
@@ -311,7 +310,6 @@ const MockTestSelectionModal: React.FC<{
                 </div>
               </div>
 
-              {/* Teacher Designed Option */}
               <div 
                 className="border-2 border-gray-200 rounded-xl p-6 hover:border-green-300 hover:bg-green-50 cursor-pointer transition-all duration-200"
                 onClick={() => handleModeSelect('teacher')}
@@ -354,7 +352,6 @@ const MockTestSelectionModal: React.FC<{
             </div>
 
             <div className="space-y-6 mb-8">
-              {/* Subject Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   Select Subject *
@@ -376,7 +373,6 @@ const MockTestSelectionModal: React.FC<{
                 </div>
               </div>
 
-              {/* Teacher Code Input (only for teacher mode) */}
               {selectedMode === 'teacher' && (
                 <div>
                   <Input
@@ -428,7 +424,6 @@ const ExamPracticePage: React.FC = () => {
 
   const handleMockTestModeSelect = (mode: 'ai' | 'teacher', subject?: string, teacherCode?: string) => {
     setShowMockTestModal(false);
-    // Navigate to mock test page (NOT My Exams)
     const params = new URLSearchParams({
       mode,
       subject: subject || '',
@@ -438,7 +433,6 @@ const ExamPracticePage: React.FC = () => {
   };
 
   const handlePreviousYearPaper = (paperId: string) => {
-    // Navigate to mock test page for previous year paper
     navigate(`/student/mocktest/previous-year/${paperId}`);
   };
 
@@ -478,7 +472,6 @@ const ExamPracticePage: React.FC = () => {
 
   const filteredExams = selectedDate ? getExamsForDate(selectedDate) : [];
 
-  // Filter previous year papers based on search query
   const filteredPreviousYearPapers = previousYearPapers.filter(paper => {
     if (!searchQuery.trim()) return true;
     
@@ -503,9 +496,7 @@ const ExamPracticePage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Content */}
         <div className="lg:col-span-3">
-          {/* Available Mock Tests */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Available Mock Tests</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -550,7 +541,6 @@ const ExamPracticePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Previous Year Papers Section with Smart Search */}
           <div className="mb-8">
             <div className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm">
               <div className="flex items-center mb-6">
@@ -563,7 +553,6 @@ const ExamPracticePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Smart Search Bar */}
               <div className="mb-6">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -581,7 +570,6 @@ const ExamPracticePage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Search Results */}
               {filteredPreviousYearPapers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredPreviousYearPapers.map((paper) => (
@@ -653,7 +641,6 @@ const ExamPracticePage: React.FC = () => {
                 </div>
               )}
 
-              {/* Search Stats */}
               {searchQuery.trim() && (
                 <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
                   <p className="text-sm text-orange-800">
@@ -665,7 +652,6 @@ const ExamPracticePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Upcoming Real Exams */}
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Real Exams</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -708,4 +694,70 @@ const ExamPracticePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Sidebar Calendar */
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm sticky top-6">
+            <div className="flex items-center mb-4">
+              <CalendarIcon className="h-5 w-5 text-gray-500 mr-2" />
+              <h3 className="font-semibold text-gray-900">Practice Calendar</h3>
+            </div>
+            
+            <div className="mb-6">
+              <Calendar
+                onChange={handleCalendarChange}
+                value={selectedDate}
+                className="w-full rounded-lg border-none"
+                tileClassName={tileClassName}
+                tileContent={tileContent}
+              />
+            </div>
+
+            {selectedDate && (
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900">
+                  Practice Tests on {selectedDate.toLocaleDateString()}
+                </h4>
+                {filteredExams.length > 0 ? (
+                  filteredExams.map((exam) => (
+                    <div key={exam.id} className="bg-gray-50 rounded-lg p-4">
+                      <h5 className="font-medium text-gray-900">{exam.title}</h5>
+                      <p className="text-sm text-gray-600">{exam.time}</p>
+                      <div className="mt-2 space-y-1">
+                        <div className="flex items-center text-gray-600">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span className="text-sm">{exam.duration}</span>
+                        </div>
+                        <div className="flex items-center text-gray-600">
+                          <BookOpen className="h-4 w-4 mr-2" />
+                          <span className="text-sm">{exam.subjects.join(', ')}</span>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleStartExam(exam.id, exam.title)}
+                        className="mt-3 w-full"
+                      >
+                        Start Practice
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600 text-center py-4">
+                    No practice tests scheduled for this date
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <MockTestSelectionModal
+        isOpen={showMockTestModal}
+        onClose={() => setShowMockTestModal(false)}
+        examTitle={selectedExam}
+        onSelectMode={handleMockTestModeSelect}
+      />
+    </div>
+  );
+};
+
+export default ExamPracticePage;
