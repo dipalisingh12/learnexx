@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   GraduationCap,
@@ -23,6 +23,7 @@ import { Link } from './Link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StudentLayout: React.FC = () => {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -51,6 +52,11 @@ const StudentLayout: React.FC = () => {
     { title: 'Study Reminder', message: 'Physics class in 30 minutes', time: '30m ago' },
     { title: 'Achievement Unlocked', message: '7-day study streak! 🔥', time: '2h ago' },
   ];
+
+  const handleLogout = () => {
+    // Add logout logic here
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -228,13 +234,13 @@ const StudentLayout: React.FC = () => {
                     View Profile
                   </Link>
                   <hr className="my-2" />
-                  <Link
-                    href="/login"
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
-                  </Link>
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
