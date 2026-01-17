@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  BookOpen, 
   GraduationCap,
   BarChart2,
   MessageSquare,
