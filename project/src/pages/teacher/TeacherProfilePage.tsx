@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Edit, Save, X, Camera, Mail, User, BookOpen, FileText, ClipboardList, FileCheck, Award, Calendar } from 'lucide-react';
 
 const TeacherProfilePage = () => {
@@ -39,13 +39,11 @@ const TeacherProfilePage = () => {
   ]);
 
   const handleSave = () => {
-    // Here you would typically save to a backend
     setIsEditing(false);
     alert('Profile updated successfully!');
   };
 
   const handleCancel = () => {
-    // Reset form or fetch original data
     setIsEditing(false);
   };
 
