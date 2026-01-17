@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  // User, 
-  // Mail, 
-  // Calendar, 
   Download,
   Share2,
   TrendingUp,
@@ -17,8 +14,7 @@ import {
   Edit3,
   Camera,
   Linkedin,
-  ExternalLink,
-  // BarChart3
+  ExternalLink
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../../components/Button';
@@ -32,16 +28,6 @@ interface Achievement {
   unlocked: boolean;
   unlockedDate?: string;
   progress?: number;
-}
-
-interface Goal {
-  id: string;
-  title: string;
-  target: number;
-  current: number;
-  unit: string;
-  deadline: string;
-  type: 'weekly' | 'monthly';
 }
 
 const ProfilePage: React.FC = () => {
@@ -138,28 +124,6 @@ const ProfilePage: React.FC = () => {
       icon: Award,
       unlocked: false,
       progress: 40
-    }
-  ];
-
-  // Current goals
-  const currentGoals: Goal[] = [
-    {
-      id: 'weekly-tests',
-      title: 'Take 5 tests this week',
-      target: 5,
-      current: 3,
-      unit: 'tests',
-      deadline: '2024-03-24',
-      type: 'weekly'
-    },
-    {
-      id: 'monthly-accuracy',
-      title: 'Maintain 85% accuracy',
-      target: 85,
-      current: 88,
-      unit: '%',
-      deadline: '2024-03-31',
-      type: 'monthly'
     }
   ];
 
