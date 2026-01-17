@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+
+
+// ===== UploadNotesPage.tsx (Fixed) =====
+import { useState } from 'react';
 import { Upload, FileText, Trash2, Edit, Download, Eye, Plus } from 'lucide-react';
 
 interface Note {
@@ -81,7 +84,6 @@ const UploadNotesPage = () => {
   };
 
   const handleFiles = (files: FileList) => {
-    // Handle file upload logic here
     console.log('Files to upload:', files);
   };
 
@@ -91,8 +93,8 @@ const UploadNotesPage = () => {
     const newNote: Note = {
       id: Date.now(),
       ...uploadData,
-      fileType: 'pdf', // This would be determined from actual file
-      fileSize: '1.2 MB', // This would be calculated from actual file
+      fileType: 'pdf',
+      fileSize: '1.2 MB',
       uploadDate: new Date().toISOString().split('T')[0],
       downloads: 0
     };
@@ -114,7 +116,8 @@ const UploadNotesPage = () => {
     ));
   };
 
-  const getFileIcon = (fileType: string) => {
+  // Fixed: Removed unused parameter
+  const getFileIcon = () => {
     return <FileText className="text-blue-600" size={20} />;
   };
 
@@ -123,7 +126,6 @@ const UploadNotesPage = () => {
   return (
     <div className="p-4 lg:p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
@@ -140,7 +142,6 @@ const UploadNotesPage = () => {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="text-center">
@@ -174,12 +175,10 @@ const UploadNotesPage = () => {
           </div>
         </div>
 
-        {/* Upload Form */}
         {showUploadForm && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <h2 className="text-xl font-semibold text-[#14213D] mb-4">Upload New Note</h2>
             
-            {/* File Upload Area */}
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center mb-6 transition-colors ${
                 dragActive ? 'border-[#14213D] bg-blue-50' : 'border-gray-300'
@@ -282,7 +281,6 @@ const UploadNotesPage = () => {
           </div>
         )}
 
-        {/* Notes List */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-[#14213D]">Uploaded Notes</h2>
           
@@ -298,7 +296,7 @@ const UploadNotesPage = () => {
                   <div className="flex justify-between items-start">
                     <div className="flex items-start space-x-4 flex-1">
                       <div className="bg-gray-100 p-3 rounded-lg">
-                        {getFileIcon(note.fileType)}
+                        {getFileIcon()}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
@@ -357,4 +355,4 @@ const UploadNotesPage = () => {
   );
 };
 
-export default UploadNotesPage;
+export default UploadNotesPage
